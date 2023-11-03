@@ -3,20 +3,19 @@ Fitting formulae for the stellar mass-halo mass relation.
 """
 
 """
-Creates a stellar mass function plot for various velociraptor
-catalogues.
+Creates a stellar mass function plot for various catalogues.
 """
 
 import unyt
 import numpy as np
 
-from velociraptor.catalogue.catalogue import VelociraptorCatalogue
+from velociraptor.catalogue.catalogue import Catalogue
 
 from typing import Union, List
 
 
 def moster(
-    catalogue: VelociraptorCatalogue,
+    catalogue: Catalogue,
     mass_range: Union[unyt.unyt_array, List[unyt.unyt_quantity]] = [
         1e4 * unyt.msun,
         1e16 * unyt.msun,
@@ -27,7 +26,7 @@ def moster(
     The moster retaion (from Moster+ 2013). Original code provided by
     Matthieu Schaller. Takes:
 
-    + catalogue, your velociraptor catalogue object
+    + catalogue, your catalogue object
     + mass_range, a length 2 array with the lowest and highest halo mass
                   you would like the relation to be evaluated between
                   (default: 1e4 msun to 1e16 msun)
@@ -85,7 +84,7 @@ def moster_raw(z, Mhalo):
 
 
 def behroozi(
-    catalogue: VelociraptorCatalogue,
+    catalogue: Catalogue,
     mass_range: Union[unyt.unyt_array, List[unyt.unyt_quantity]] = [
         1e4 * unyt.msun,
         1e16 * unyt.msun,
@@ -96,7 +95,7 @@ def behroozi(
     The behroozi fit to the SMHMR (from Behroozi+ 2013). Original code provided by
     Matthieu Schaller. Takes:
 
-    + catalogue, your velociraptor catalogue object
+    + catalogue, your catalogue object
     + mass_range, a length 2 array with the lowest and highest halo mass
                   you would like the relation to be evaluated between
                   (default: 1e4 msun to 1e16 msun)

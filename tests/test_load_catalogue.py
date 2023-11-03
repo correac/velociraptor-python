@@ -3,11 +3,11 @@ Basic tests for loading a catalogue.
 """
 
 from velociraptor import load
+from helper import requires
 
 
-def test_basic_load_catalogue_no_crash(
-    filename="/Users/mphf18/Desktop/halo_027_z00p101.properties",
-):
+@requires("cosmo_0000.properties")
+def test_basic_load_catalogue_no_crash(filename="test_data/cosmo_0000.properties",):
     catalogue = load(filename)
 
     return

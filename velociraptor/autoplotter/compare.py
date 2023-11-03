@@ -21,11 +21,12 @@ from velociraptor.autoplotter.plot import decorate_axes
 from velociraptor.autoplotter.objects import AutoPlotter
 from velociraptor.autoplotter.metadata import AutoPlotterMetadata
 from velociraptor.observations import load_observations
+from velociraptor.catalogue.catalogue import Catalogue
 
 
-class FakeCatalogue(object):
+class FakeCatalogue(Catalogue):
     """
-    Fake VelociraptorCatalogue used to store redshift and
+    Fake Catalogue used to store redshift and
     scale factor information if available.
     """
 

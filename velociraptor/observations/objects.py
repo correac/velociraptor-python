@@ -640,21 +640,35 @@ class ObservationalData(object):
                 kwargs["markerfacecolor"] = "none"
 
             if len(self.x) > 1000:
-                kwargs["rasterize"] = True
+                kwargs["rasterized"] = True
         elif self.plot_as == "line":
             kwargs["zorder"] = line_zorder
 
         # Make both the data name and redshift appear in the legend
         data_label = f"{self.citation} ($z={self.redshift:.1f}$)"
 
-        axes.errorbar(
-            self.x,
-            self.y,
-            yerr=self.y_scatter,
-            xerr=self.x_scatter,
-            **kwargs,
-            label=data_label,
-        )
+        try:
+            axes.errorbar(
+                self.x,
+                self.y,
+                yerr=self.y_scatter,
+                xerr=self.x_scatter,
+                **kwargs,
+                label=data_label,
+            )
+        except ValueError as e:
+            # at some point, matplotlib decided that negative xerr or yerr
+            # values for errorbars are no longer allowed. This makes sense.
+            # Unfortunately, the current observational data repository does not
+            # guarantee non-negative scatter values. In order to avoid
+            # meaningless error messages, we make the error message more explicit
+            # by naming the offending data.
+            raise ValueError(
+                f"Problem while adding {data_label} data!"
+                f" x: {self.x}, y: {self.y},"
+                f" x_scatter: {self.x_scatter}, y_scatter: {self.y_scatter}"
+            )
+            raise e
 
         return
 

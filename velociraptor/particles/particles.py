@@ -9,7 +9,7 @@ and their unbound variants.
 
 The objects defined here are as follows:
 
-VelociraptorGroups: This depends on the VelociraptorCatalogue object
+VelociraptorGroups: This depends on the Catalogue object
                     and allows for users to find information about where
                     in each file each group belongs.
 VelociraptorParticles: This depends on VelociraptorGroups and itself allows
@@ -22,7 +22,7 @@ import h5py
 import numpy as np
 
 
-from velociraptor.catalogue.catalogue import VelociraptorCatalogue
+from velociraptor.catalogue.catalogue import Catalogue
 
 from typing import Union, Dict
 
@@ -48,7 +48,7 @@ class VelociraptorGroups(object):
     offset_unbound: np.ndarray
     parent_halo_id: np.ndarray
 
-    def __init__(self, filename, catalogue: Union[VelociraptorCatalogue, None]):
+    def __init__(self, filename, catalogue: Union[Catalogue, None]):
         """
         Initialise the velociraptor groups object. This
         loads all of the groups data, that should be relatively
@@ -271,9 +271,7 @@ class VelociraptorParticles(object):
 
         return
 
-    def register_halo_attributes(
-        self, catalogue: VelociraptorCatalogue, halo_index: int
-    ):
+    def register_halo_attributes(self, catalogue: Catalogue, halo_index: int):
         """
         Registers useful halo attributes to this object (such as the mass and radii of the halo).
         """

@@ -4,13 +4,13 @@ extract the particles belonging to, e.g. a single halo.
 """
 
 from velociraptor.particles.particles import VelociraptorGroups
-from velociraptor.catalogue.catalogue import VelociraptorCatalogue
+from velociraptor.catalogue.catalogue import Catalogue
 
 from typing import Union
 
 
 def load_groups(
-    filename, catalogue: Union[VelociraptorCatalogue, None] = None
+    filename, catalogue: Union[Catalogue, None] = None
 ) -> VelociraptorGroups:
     """
     Load the groups file, passed by its filename to this

@@ -190,7 +190,7 @@ def registration_rotational_support(
 ) -> (unyt.Unit, str, str):
     """
     Registers rotational support quantities (those beginning with K).
-    Note that this corresponds to \kappa in Sales+2010 _not_ K.
+    Note that this corresponds to \\kappa in Sales+2010 _not_ K.
     """
 
     if not field_path[0] == "K":
@@ -451,7 +451,7 @@ def registration_star_formation_rate(
 
     unit = unit_system.star_formation_rate
 
-    full_name = r"Star Formation Rate $\dot{\rho}_*$"
+    full_name = "Star Formation Rate $\\dot{\\rho}_*$"
 
     return unit, full_name, field_path.lower()
 
@@ -716,7 +716,7 @@ def registration_veldisp(
         coordinate = match.group(1)
         ptype = match.group(2)
 
-        full_name = f"$\sigma_{{{{\\rm v}}, {coordinate.lower()}}}$"
+        full_name = f"$\\sigma_{{{{\\rm v}}, {coordinate.lower()}}}$"
 
         if ptype:
             full_name += f" ({ptype})"
@@ -1050,8 +1050,8 @@ def registration_cold_dense_gas_properties(
         except KeyError:
             raise RegistrationDoesNotMatchError
         full_name = (
-            f"{long_quantity} Masses in Cold, Dense ($T < 10^{{4.5}}\;{{\rm K}}$, "
-            f"$n_{{\\rm H}}$ > 0.1 \\; {{\rm cm^{{-3}}}}$) Gas ({aperture_size} kpc)"
+            f"{long_quantity} Masses in Cold, Dense ($T < 10^{{4.5}} [{{\\rm K}}]$, "
+            f"$n_{{\\rm H}}$ > 0.1 [{{\\rm cm^{{-3}}}}]$) Gas ({aperture_size} kpc)"
         )
         snake_case = f"cold_dense_{short_quantity}_mass_{aperture_size}_kpc"
         return unit, full_name, snake_case

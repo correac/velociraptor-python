@@ -2,7 +2,7 @@
 Main objects for holding information relating to the autoplotter.
 """
 
-from velociraptor import VelociraptorCatalogue
+from velociraptor import Catalogue
 from velociraptor.autoplotter.lines import VelociraptorLine, valid_line_types
 from velociraptor.autoplotter.box_size_correction import VelociraptorBoxSizeCorrection
 from velociraptor.exceptions import AutoPlotterError
@@ -19,7 +19,6 @@ from typing import Union, List, Dict, Tuple
 from pathlib import Path
 
 from os import path, mkdir
-from functools import reduce
 from collections import OrderedDict
 
 valid_plot_types = [
@@ -767,13 +766,13 @@ class VelociraptorPlot(object):
         return
 
     def get_quantity_from_catalogue_with_mask(
-        self, quantity: str, catalogue: VelociraptorCatalogue
+        self, quantity: str, catalogue: Catalogue
     ) -> unyt_array:
         """
         Get a quantity from the catalogue using the mask.
         """
 
-        x = reduce(getattr, quantity.split("."), catalogue)
+        x = catalogue.get_quantity(quantity)
         # We give each dataset a custom name, that gets ruined when masking
         # in versions of unyt less than 2.6.0
         name = x.name
@@ -790,9 +789,9 @@ class VelociraptorPlot(object):
 
         if self.selection_mask is not None:
             # Create mask
-            self.structure_mask = reduce(
-                getattr, self.selection_mask.split("."), catalogue
-            ).astype(bool)
+            self.structure_mask = catalogue.get_quantity(self.selection_mask).astype(
+                bool
+            )
         if self.select_structure_type is not None:
             if self.select_structure_type == self.exclude_structure_type:
                 raise AutoPlotterError(
@@ -801,12 +800,14 @@ class VelociraptorPlot(object):
                 )
             self.structure_mask = logical_and(
                 self.structure_mask,
-                catalogue.structure_type.structuretype == self.select_structure_type,
+                catalogue.get_quantity("structure_type.structuretype")
+                == self.select_structure_type,
             )
         if self.exclude_structure_type is not None:
             self.structure_mask = logical_and(
                 self.structure_mask,
-                catalogue.structure_type.structuretype != self.exclude_structure_type,
+                catalogue.get_quantity("structure_type.structuretype")
+                != self.exclude_structure_type,
             )
 
         # combine global and structure masks
@@ -817,9 +818,7 @@ class VelociraptorPlot(object):
         x.name = name
         return x
 
-    def _make_plot_scatter(
-        self, catalogue: VelociraptorCatalogue
-    ) -> Tuple[Figure, Axes]:
+    def _make_plot_scatter(self, catalogue: Catalogue) -> Tuple[Figure, Axes]:
         """
         Makes a scatter plot and returns the figure and axes.
         """
@@ -835,9 +834,7 @@ class VelociraptorPlot(object):
 
         return fig, ax
 
-    def _make_plot_2dhistogram(
-        self, catalogue: VelociraptorCatalogue
-    ) -> Tuple[Figure, Axes]:
+    def _make_plot_2dhistogram(self, catalogue: Catalogue) -> Tuple[Figure, Axes]:
         """
         Makes a 2d histogram plot and returns the figure and axes.
         """
@@ -855,9 +852,7 @@ class VelociraptorPlot(object):
 
         return fig, ax
 
-    def _make_plot_massfunction(
-        self, catalogue: VelociraptorCatalogue
-    ) -> Tuple[Figure, Axes]:
+    def _make_plot_massfunction(self, catalogue: Catalogue) -> Tuple[Figure, Axes]:
         """
         Makes a mass function plot and returns the figure and axes.
         """
@@ -888,7 +883,7 @@ class VelociraptorPlot(object):
         return fig, ax
 
     def _make_plot_adaptivemassfunction(
-        self, catalogue: VelociraptorCatalogue
+        self, catalogue: Catalogue
     ) -> Tuple[Figure, Axes]:
         """
         Makes the _adaptive_ mass function plot. Same as mass function.
@@ -896,7 +891,7 @@ class VelociraptorPlot(object):
         return self._make_plot_massfunction(catalogue=catalogue)
 
     def _make_plot_luminosityfunction(
-        self, catalogue: VelociraptorCatalogue
+        self, catalogue: Catalogue
     ) -> Tuple[Figure, Axes]:
         """
         Makes a luminosity function plot and returns the figure and axes.
@@ -927,9 +922,7 @@ class VelociraptorPlot(object):
 
         return fig, ax
 
-    def _make_plot_histogram(
-        self, catalogue: VelociraptorCatalogue
-    ) -> Tuple[Figure, Axes]:
+    def _make_plot_histogram(self, catalogue: Catalogue) -> Tuple[Figure, Axes]:
         """
         Make histogram plot and return the figure and axes.
         """
@@ -950,7 +943,7 @@ class VelociraptorPlot(object):
         return fig, ax
 
     def _make_plot_cumulative_histogram(
-        self, catalogue: VelociraptorCatalogue
+        self, catalogue: Catalogue
     ) -> Tuple[Figure, Axes]:
         """
         Make cumulative histogram plot and return the figure and axes.
@@ -984,7 +977,7 @@ class VelociraptorPlot(object):
 
     def make_plot(
         self,
-        catalogue: VelociraptorCatalogue,
+        catalogue: Catalogue,
         directory: str,
         file_extension: str,
         no_plot: bool = False,
@@ -1065,7 +1058,7 @@ class AutoPlotter(object):
     # Forward declarations
     filename: Union[str, List[str]]
     multiple_yaml_files: bool
-    catalogue: VelociraptorCatalogue
+    catalogue: Catalogue
     yaml: Dict[str, Union[Dict, str]]
     plots: List[VelociraptorPlot]
     # Directory containing the observational data.
@@ -1150,9 +1143,7 @@ class AutoPlotter(object):
 
         return
 
-    def link_catalogue(
-        self, catalogue: VelociraptorCatalogue, global_mask_tag: Union[None, str]
-    ):
+    def link_catalogue(self, catalogue: Catalogue, global_mask_tag: Union[None, str]):
         """
         Links a catalogue with this object so that the plots
         can actually be created.
@@ -1161,7 +1152,7 @@ class AutoPlotter(object):
         self.catalogue = catalogue
 
         if global_mask_tag is not None:
-            self.global_mask = reduce(getattr, global_mask_tag.split("."), catalogue)
+            self.global_mask = catalogue.get_quantity(global_mask_tag)
         else:
             self.global_mask = True
         return
@@ -1202,8 +1193,8 @@ class AutoPlotter(object):
                     import sys, traceback
 
                     _, _, exc_traceback = sys.exc_info()
-                    print("Traceback:")
-                    traceback.print_tb(exc_traceback, limit=10, file=sys.stdout)
+                    print("Traceback:", file=sys.stderr)
+                    traceback.print_tb(exc_traceback, limit=10, file=sys.stderr)
             except UnitConversionError as e:
                 print(
                     f"Unable to create plot {plot.filename} due to an error when "
@@ -1218,7 +1209,19 @@ class AutoPlotter(object):
                     import sys, traceback
 
                     _, _, exc_traceback = sys.exc_info()
-                    print("Traceback:")
-                    traceback.print_tb(exc_traceback, limit=10, file=sys.stdout)
+                    print("Traceback:", file=sys.stderr)
+                    traceback.print_tb(exc_traceback, limit=10, file=sys.stderr)
+            except Exception as e:
+                print(
+                    f"Unable to create plot {plot.filename} due to an unkown error: {e}!",
+                    file=sys.stderr,
+                )
+                self.created_successfully.append(False)
+                if debug:
+                    import sys, traceback
+
+                    _, _, exc_traceback = sys.exc_info()
+                    print("Traceback:", file=sys.stderr)
+                    traceback.print_tb(exc_traceback, limit=10, file=sys.stderr)
 
         return

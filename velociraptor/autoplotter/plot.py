@@ -9,7 +9,7 @@ import unyt
 from matplotlib import rcParams
 
 from matplotlib.colors import LogNorm
-from velociraptor import VelociraptorCatalogue
+from velociraptor import Catalogue
 from velociraptor.autoplotter.objects import VelociraptorLine
 from typing import Tuple, Union
 
@@ -124,7 +124,7 @@ def histogram(
 
 def decorate_axes(
     ax: plt.Axes,
-    catalogue: VelociraptorCatalogue,
+    catalogue: Catalogue,
     comment: Union[str, None] = None,
     legend_loc: str = "upper left",
     redshift_loc: str = "lower right",

@@ -33,14 +33,12 @@ class DerivedQuantities(object):
     .. code-block:: python
 
         for aperture_size in [5, 10, 30, 50, 100]:
-            stellar_mass = getattr(
-                catalogue.apertures,
-                f"mass_star_{aperture_size}_kpc"
+            stellar_mass = catalogue.get_quantity(
+                f"apertures.mass_star_{aperture_size}_kpc"
             )
 
-            star_formation_rate = getattr(
-                catalogue.apertures,
-                f"sfr_gas_{aperture_size}_kpc"
+            star_formation_rate = catalogue.get_quantity(
+                f"apertures.sfr_gas_{aperture_size}_kpc"
             )
 
             ssfr = star_formation_rate / stellar_mass
@@ -65,7 +63,7 @@ class DerivedQuantities(object):
     def __init__(self, registration_file_path: Union[List[str], str], catalogue):
         """
         Registers additional (derived) quantities from the
-        VelociraptorCatalogue to itself, using a python
+        Catalogue to itself, using a python
         source file that does this registration inside
         the private _register_quantities() method.
 
@@ -77,7 +75,7 @@ class DerivedQuantities(object):
             on the contents of this file/these files, check out the information
             of this object.
 
-        catalogue: VelociraptorCatalogue
+        catalogue: Catalogue
             The catalogue to derive the quantities from.
 
 
